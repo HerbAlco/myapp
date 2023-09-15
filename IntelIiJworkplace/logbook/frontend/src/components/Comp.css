@@ -1,0 +1,11 @@
+.MuiIconButton-sizeLarge
+.custom-filled-input {
+  background-color: white; 
+  border-color: white; 
+}
+
+.custom-filled-input:focus {
+  background-color: white; 
+  border-color: white; 
+}
+
