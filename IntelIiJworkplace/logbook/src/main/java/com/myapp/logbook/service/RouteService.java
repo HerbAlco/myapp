@@ -3,7 +3,6 @@ package com.myapp.logbook.service;
 import com.myapp.logbook.models.Route;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface RouteService {
@@ -12,7 +11,7 @@ public interface RouteService {
 
     List<Route> getAllRoutes();
 
-//    List<Route> getAllRoutesByDate(LocalDate routeStartDate);
+    List<Route> findAllByRouteStartDate(LocalDate routeStartDate);
 
     List<Route> getAllRoutesByUserId(Long userId);
 

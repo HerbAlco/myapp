@@ -24,9 +24,8 @@ public class Route {
     private String userName;
     private LocalDateTime routeStartDateTime;
     private LocalDateTime routeEndDateTime;
-//    TODO: zkoušel jsem vytáhnout pouze localdate z localdatetime
-//    private LocalDate routeStartDate;
-//    private LocalDate routeEndDate;
+    private LocalDate routeStartDate;
+    private LocalDate routeEndDate;
     private double distance;
     private String startLocation;
     private String endLocation;

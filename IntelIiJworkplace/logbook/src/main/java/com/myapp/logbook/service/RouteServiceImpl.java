@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -76,11 +75,10 @@ public class RouteServiceImpl implements RouteService{
         return "Route with id: " + id + ", was deleted";
     }
 
-//    TODO: opravit vyhledání podle localdate
-//    @Override
-//    public List<Route> getAllRoutesByDate(LocalDate routeStartDate) {
-//        return routeRepository.findAllByDate(routeStartDate);
-//    }
+    @Override
+    public List<Route> findAllByRouteStartDate(LocalDate routeStartDate) {
+        return routeRepository.findAllByRouteStartDate(routeStartDate);
+    }
 
     @Override
     public List<Route> getAllRoutesByUserId(Long userId) {
