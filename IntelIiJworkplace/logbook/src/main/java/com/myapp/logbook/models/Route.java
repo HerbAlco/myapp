@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
@@ -20,8 +21,12 @@ public class Route {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long routeId;
     private long userId;
-    private LocalDateTime routeStartDate;
-    private LocalDateTime routeEndDate;
+    private String userName;
+    private LocalDateTime routeStartDateTime;
+    private LocalDateTime routeEndDateTime;
+//    TODO: zkoušel jsem vytáhnout pouze localdate z localdatetime
+//    private LocalDate routeStartDate;
+//    private LocalDate routeEndDate;
     private double distance;
     private String startLocation;
     private String endLocation;

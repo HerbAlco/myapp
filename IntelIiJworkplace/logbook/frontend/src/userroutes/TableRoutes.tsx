@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
 import Table from '@mui/material/Table';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
@@ -7,11 +8,13 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import axios from 'axios';
 import moment from 'moment';
+import dayjs from 'dayjs';
 
 
 interface Route {
   routeId: number;
   userId: number;
+  userName: string;
   routeStartDate: string;
   routeEndDate: string;
   distance: number;
@@ -23,50 +26,45 @@ interface Route {
 }
 
 interface TableRoutesProps {
-  apiUrl: string;
+  selectedDate: dayjs.Dayjs | null;
 }
 
-export default function TableRoutes({ apiUrl }: TableRoutesProps) {
+const StyledTableCell = styled(TableCell)`
+  border: 1px solid lightgray;
+`;
+
+const StyledTableContainer = styled(TableContainer)`
+  border: 1px solid lightgray;
+`;
+
+export default function TableRoutes({ selectedDate }: TableRoutesProps) {
   const [routes, setRoutes] = useState<Route[]>([]);
-  const [userNames, setUserNames] = useState<{ [userId: number]: string }>({});
+  const [apiUrl] = useState<string>('http://10.1.1.5:8080/api/v1/auth/route/routes');
 
   useEffect(() => {
-    axios
-      .get<Route[]>(apiUrl)
-      .then(async (response) => {
-        const routesWithUserNames = await Promise.all(
-          response.data.map(async (route) => {
-            const userId = route.userId;
-            if (!userNames[userId]) {
-              const userResponse = await axios.get(`http://10.1.1.5:8080/api/v1/auth/user/${userId}`);
-              const userName = userResponse.data.firstname;
-              setUserNames((prevUserNames) => ({
-                ...prevUserNames,
-                [userId]: userName,
-              }));
-            }
-            return { ...route, userName: userNames[userId] };
-          })
-        );
-        setRoutes(routesWithUserNames);
-      })
-      .catch((error) => {
-        console.error('Chyba při načítání dat:', error);
-      });
-  }, [apiUrl, userNames]);
-
-  const tableHeadStyle: React.CSSProperties = {
-    backgroundColor: 'lightgray',
-    fontWeight: 'bold',
-  };
+    if (selectedDate) {
+      const formattedDate = selectedDate.format('YYYY-MM-DD');
+      const newApiUrl = `http://10.1.1.5:8080/api/v1/auth/route/routesByDate/${formattedDate}`;
+      axios
+        .get<Route[]>(newApiUrl)
+        .then((response) => {
+          setRoutes(response.data);
+        })
+        .catch((error) => {
+          console.error('Chyba při načítání dat:', error);
+        });
+    } else {
+      axios
+        .get<Route[]>(apiUrl)
+        .then((response) => {
+          setRoutes(response.data);
+        })
+        .catch((error) => {
+          console.error('Chyba při načítání dat:', error);
+        });
+    }
+  }, [selectedDate, apiUrl]);
   
-  const tableCellStyle: React.CSSProperties = {
-    border: '1px solid lightgray', // Přidejte rámec pro buňky
-  };
-  
-  const tableContainerStyle: React.CSSProperties = {
-    border: '1px solid lightgray',
-  };
 
   function calculateRouteDuration(startDate: string, endDate: string): number {
     const startMoment = moment(startDate);
@@ -76,53 +74,53 @@ export default function TableRoutes({ apiUrl }: TableRoutesProps) {
   }
 
   return (
-    <TableContainer component={Paper} style={tableContainerStyle}>
+    <StyledTableContainer component={Paper}>
       <Table sx={{ minWidth: 1150 }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell align="right" style={{ ...tableHeadStyle, ...tableCellStyle }}>ID Trasy</TableCell>
-            <TableCell align="right" style={{ ...tableHeadStyle, ...tableCellStyle }}>Jméno&nbsp;(ID)</TableCell>
-            <TableCell align="right" style={{ ...tableHeadStyle, ...tableCellStyle }}>Datum</TableCell>
-            <TableCell align="right" style={{ ...tableHeadStyle, ...tableCellStyle }}>
+            <StyledTableCell align="right">ID Trasy</StyledTableCell>
+            <StyledTableCell align="right">Jméno&nbsp;(ID)</StyledTableCell>
+            <StyledTableCell align="right">Datum</StyledTableCell>
+            <StyledTableCell align="right">
               <div>Odjezd</div>
               <div>Příjezd</div>
-            </TableCell>
-            <TableCell align="right" style={{ ...tableHeadStyle, ...tableCellStyle }}>Vzdálenost&nbsp;(km)</TableCell>
-            <TableCell align="right" style={{ ...tableHeadStyle, ...tableCellStyle }}>Trasa odkud</TableCell>
-            <TableCell align="right" style={{ ...tableHeadStyle, ...tableCellStyle }}>Trasa kam</TableCell>
-            <TableCell align="right" style={{ ...tableHeadStyle, ...tableCellStyle }}>Trvání&nbsp;(min)</TableCell>
-            <TableCell align="right" style={{ ...tableHeadStyle, ...tableCellStyle }}>Druh</TableCell>
-            <TableCell align="right" style={{ ...tableHeadStyle, ...tableCellStyle }}>Cena&nbsp;(Kč)</TableCell>
+            </StyledTableCell>
+            <StyledTableCell align="right">Vzdálenost&nbsp;(km)</StyledTableCell>
+            <StyledTableCell align="right">Trasa odkud</StyledTableCell>
+            <StyledTableCell align="right">Trasa kam</StyledTableCell>
+            <StyledTableCell align="right">Trvání&nbsp;(min)</StyledTableCell>
+            <StyledTableCell align="right">Druh</StyledTableCell>
+            <StyledTableCell align="right">Cena&nbsp;(Kč)</StyledTableCell>
           </TableRow>
         </TableHead>
         <tbody>
         {routes.map(route => (
           <TableRow key={route.routeId}>
-            <TableCell style={tableCellStyle}>{route.routeId}</TableCell>
-            <TableCell style={tableCellStyle}>{userNames[route.userId]}</TableCell>
-            <TableCell style={tableCellStyle}>Od: 
+            <StyledTableCell >{route.routeId}</StyledTableCell>
+            <StyledTableCell >{route.userName} <strong>({route.userId})</strong></StyledTableCell>
+            <StyledTableCell >Od: 
               {moment(route.routeStartDate).format('DD-MM-YYYY')}
               <br />
               Do: 
               {moment(route.routeEndDate).format('DD-MM-YYYY')}
-            </TableCell>
-            <TableCell style={tableCellStyle}>
+            </StyledTableCell>
+            <StyledTableCell >
               Od: 
               {moment(route.routeStartDate).format('HH:mm')}
               <br />
               Do: 
               {moment(route.routeEndDate).format('HH:mm')}
-            </TableCell>
-            <TableCell style={tableCellStyle}>{route.distance}</TableCell>
-            <TableCell style={tableCellStyle}>{route.startLocation}</TableCell>
-            <TableCell style={tableCellStyle}>{route.endLocation}</TableCell>
-            <TableCell style={tableCellStyle}>{calculateRouteDuration(route.routeStartDate, route.routeEndDate)}</TableCell>
-            <TableCell style={tableCellStyle}>{route.purpose}</TableCell>
-            <TableCell style={tableCellStyle}>{route.routeCost}&nbsp;(Kč)</TableCell>
+            </StyledTableCell>
+            <StyledTableCell >{route.distance}</StyledTableCell>
+            <StyledTableCell>{route.startLocation}</StyledTableCell>
+            <StyledTableCell>{route.endLocation}</StyledTableCell>
+            <StyledTableCell>{calculateRouteDuration(route.routeStartDate, route.routeEndDate)}</StyledTableCell>
+            <StyledTableCell>{route.purpose}</StyledTableCell>
+            <StyledTableCell>{route.routeCost}&nbsp;(Kč)</StyledTableCell>
           </TableRow>
         ))}
       </tbody>
       </Table>
-    </TableContainer>
+    </StyledTableContainer>
   );
 }

@@ -1,16 +1,20 @@
 package com.myapp.logbook.service;
 
 import com.myapp.logbook.models.Route;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface RouteService {
+
     Route addRoute(Route route);
 
     List<Route> getAllRoutes();
 
-    List<Route> getAllRoutesByUserId(Long id);
+//    List<Route> getAllRoutesByDate(LocalDate routeStartDate);
+
+    List<Route> getAllRoutesByUserId(Long userId);
 
     String updateRoute(Long id, Route route);
 

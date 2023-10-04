@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Box from '@mui/material/Box';
+import styled from 'styled-components';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
@@ -15,6 +15,38 @@ import dayjs from 'dayjs';
 import TableRoutes from './TableRoutes';
 import { useNavigate } from 'react-router-dom';
 
+
+const Container = styled.div`
+  display: flex;
+  align-items: flex-start;
+`;
+
+const FormControlContainer = styled.div`
+  margin-top: 25px;
+  width: 100%;
+  margin-right: 50px;
+`;
+
+const SelectWrapper = styled(FormControl)``;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+`;
+
+const StyledButton = styled(Button)`
+  margin-bottom: 10px;
+  margin-left: 5px;
+  justify-content: space-between;
+`;
+
+const CalendarContainer = styled.div`
+  width: 400px;
+`;
+
+const TableContainer = styled.div``;
+
 interface MainRoutesProps {
   isUserLoggedIn: boolean;
 }
@@ -29,40 +61,8 @@ export default function MainRoutes({ isUserLoggedIn }: MainRoutesProps) {
     navigate('/login');
     return null;
   }
-
-  const styles: Record<string, React.CSSProperties> = {
-    container: {
-      display: 'flex',
-      alignItems: 'flex-start',
-    },
-    formControl: {
-      marginTop: '25px',
-      width: '100%',
-      marginRight: '50px',
-    },
-    select: {
-      width: '100%',
-    },
-    buttonContainer: {
-      flexDirection: 'column',
-      marginTop: '10px',
-    },
-    button: {
-      marginBottom: '10px',
-      marginLeft: "5px",
-      justifyContent: 'space-between',
-    },
-    icon: {
-      marginRight: '5px',
-    },
-    calendarContainer: {
-      width: '400px',
-    },
-    tableContainer: {
-    },
-  };
-
-  const handleChange = (event: SelectChangeEvent) => {
+  
+  const handleChange = (event: SelectChangeEvent<string>) => {
     setVehicle(event.target.value as string);
   };
 
@@ -86,9 +86,9 @@ export default function MainRoutes({ isUserLoggedIn }: MainRoutesProps) {
   };
 
   return (
-    <Box sx={styles.container}>
+    <Container>
       <div>
-        <FormControl sx={styles.formControl}>
+        <FormControlContainer>
           <InputLabel id="demo-simple-select-label">Vozidlo</InputLabel>
           <Select
             labelId="demo-simple-select-label"
@@ -96,45 +96,42 @@ export default function MainRoutes({ isUserLoggedIn }: MainRoutesProps) {
             value={vehicle}
             label="Vehicle"
             onChange={handleChange}
-            sx={styles.select}
           >
             <MenuItem value="Audi A3">Audi A3</MenuItem>
             <MenuItem value="Octavia 1">Octavia 1</MenuItem>
             <MenuItem value="Seat Leon">Seat Leon</MenuItem>
           </Select>
-        </FormControl>
-        <div style={styles.buttonContainer}>
-          <Button
+        </FormControlContainer>
+        <ButtonContainer>
+          <StyledButton
             variant="contained"
             color="primary"
             onClick={handlePrevDayClick}
-            style={styles.button}
           >
-            <KeyboardArrowLeftIcon sx={styles.icon} />
+            <KeyboardArrowLeftIcon />
             Předchozí den
-          </Button>
-          <Button
+          </StyledButton>
+          <StyledButton
             variant="contained"
             color="primary"
             onClick={handleNextDayClick}
-            style={styles.button}
           >
             Následující den
-            <KeyboardArrowRightIcon sx={styles.icon} />
-          </Button>
-        </div>
+            <KeyboardArrowRightIcon />
+          </StyledButton>
+        </ButtonContainer>
       </div>
-      <div style={styles.calendarContainer}>
+      <CalendarContainer>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateCalendar
             value={calendarSelectedDate}
             onChange={handleCalendarDateClick}
           />
         </LocalizationProvider>
-      </div>
-      <div style={styles.tableContainer}>
-        <TableRoutes apiUrl="http://10.1.1.5:8080/api/v1/auth/route/routes" />
-      </div>
-    </Box>
+      </CalendarContainer>
+      <TableContainer>
+        <TableRoutes selectedDate={selectedDate}/>
+      </TableContainer>
+    </Container>
   );
 }

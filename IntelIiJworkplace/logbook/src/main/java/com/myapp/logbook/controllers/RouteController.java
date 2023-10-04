@@ -5,6 +5,8 @@ import com.myapp.logbook.service.RouteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -26,6 +28,10 @@ public class RouteController {
     public String addRoute(@RequestBody Route route) {
         route.setUserId(userController.getUser().getId());
         route.setRouteCost(route.getDistance() * 3.85);
+        route.setUserName(userController.getUser().getFirstname() + " " + userController.getUser().getLastname());
+//        TODO: uložení localdate z localdatetime
+//        route.setRouteStartDate(route.getRouteStartDateTime().toLocalDate());
+//        route.setRouteEndDate(route.getRouteEndDateTime().toLocalDate());
         routeService.addRoute(route);
         return "New route was added";
     }
@@ -35,10 +41,16 @@ public class RouteController {
         return routeService.getAllRoutes();
     }
 
-    @GetMapping("/routes/{userId}")
-    public List<Route> getAllRoutesByUserId(@PathVariable Long userId) {
-        return routeService.getAllRoutesByUserId(userId);
+    @GetMapping("/routesById/{userId}")
+    public List<Route> getAllRoutesByUserId(@PathVariable String userId) {
+        return routeService.getAllRoutesByUserId(Long.valueOf(userId));
     }
+
+//    TODO: opravit vyhledání podle localdate
+//    @GetMapping("/routesByDate/{routeStartDate}")
+//    public List<Route> getAllRoutesByDate (@PathVariable String routeStartDate){
+//        return routeService.getAllRoutesByDate(LocalDate.parse(routeStartDate));
+//    }
 
     @PutMapping("/update/{routeId}")
     public String updateRoute(@PathVariable Long routeId, @RequestBody Route updateRoute) {
